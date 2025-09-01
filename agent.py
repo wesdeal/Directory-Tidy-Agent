@@ -22,17 +22,26 @@ def clean():
         else:
             for key, values in rules.items():
                 if file.suffix in values:
-                    print(f"File {file} will be moved to {key} folder.")
-                    log_action(action="move", file_name=file, folder_name=key)
+                    try:
+                        log_action(action="move", file_name=file, folder_name=key)
+                        dest = path / key / file.name # make new destination path using curr path, key(organized folder) and file name
+                        dest.parent.mkdir(parents=True, exist_ok=True)
+                        file.rename(dest) # move file to new destination
+                        print(f"Moved file: {file} to folder {key}")
+                    except Exception as e:
+                        print(f"Error moving file: {e}")
+
                     break
                 else:
                     print(f"File {file} does not match any rule and will move to Other Files folder.")
+                    log_action(action="move", file_name=file, folder_name="Other Files")
                     break
 
     return folders
 
 
 if __name__ == "__main__":
+    path = input
     check_exists()
     folders = clean()
     print("Folders found and unmoved: ")
